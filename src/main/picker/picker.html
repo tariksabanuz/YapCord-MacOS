@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'" />
+<title>Share your screen</title>
+<style>
+  :root { --bg:#222329; --side:#1b1c21; --rail:#141519; --elev:#2b2c33; --hover:#2f3038; --active:#383944;
+          --text:#ececf1; --muted:#9c9daa; --accent:#ff6b4a; --accent-hover:#ff5a35; --border:#ffffff12; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--text);
+    font: 14px/1.4 Inter, ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif; overflow:hidden; }
+  .wrap { display:flex; flex-direction:column; height:100%; }
+  header { padding:16px 18px 8px; }
+  h1 { margin:0; font-size:18px; }
+  p.sub { margin:4px 0 0; color:var(--muted); font-size:13px; }
+  .tabs { display:flex; gap:6px; padding:8px 18px; }
+  .tabs button { background:var(--elev); color:var(--muted); border:0; border-radius:8px; padding:7px 14px; font:inherit; font-weight:600; cursor:pointer; }
+  .tabs button.on { background:var(--active); color:var(--text); }
+  .grid { flex:1; overflow:auto; padding:6px 18px 10px; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; align-content:start; }
+  .card { background:var(--side); border:2px solid transparent; border-radius:10px; padding:8px; cursor:pointer; text-align:left; color:inherit; font:inherit; }
+  .card:hover { background:var(--hover); }
+  .card.sel { border-color:var(--accent); background:var(--hover); }
+  .card img.thumb { width:100%; aspect-ratio:16/9; object-fit:contain; background:var(--rail); border-radius:6px; display:block; }
+  .card .name { margin-top:6px; display:flex; gap:6px; align-items:center; font-size:12.5px; }
+  .card .name img { width:16px; height:16px; }
+  .card .name span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  footer { display:flex; align-items:center; gap:10px; padding:12px 18px; border-top:1px solid var(--border); background:var(--side); }
+  footer label { flex:1; color:var(--muted); display:flex; gap:8px; align-items:center; }
+  footer label.off { opacity:.5; }
+  button.btn { border:0; border-radius:8px; padding:9px 18px; font:inherit; font-weight:600; cursor:pointer; background:var(--accent); color:#fff; }
+  button.btn:hover { background:var(--accent-hover); }
+  button.btn.sec { background:var(--active); color:var(--text); }
+  button.btn:disabled { opacity:.45; cursor:default; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>Share your screen</h1><p class="sub">Pick a screen or a window to show in Yapper.</p></header>
+  <div class="tabs"><button id="t-screen" class="on">Screens</button><button id="t-window">Windows</button></div>
+  <div class="grid" id="grid"></div>
+  <footer>
+    <label id="audioWrap"><input type="checkbox" id="audio" /> Also share system audio</label>
+    <button class="btn sec" id="cancel">Cancel</button>
+    <button class="btn" id="go" disabled>Share</button>
+  </footer>
+</div>
+<script>
+  let all = [], tab = 'screen', sel = null;
+  const grid = document.getElementById('grid');
+  const go = document.getElementById('go');
+  function render() {
+    grid.textContent = '';
+    for (const s of all.filter((x) => (tab === 'screen') === x.isScreen)) {
+      const b = document.createElement('button');
+      b.className = 'card' + (sel === s.id ? ' sel' : '');
+      const im = document.createElement('img'); im.className = 'thumb'; im.src = s.thumb; b.appendChild(im);
+      const nm = document.createElement('div'); nm.className = 'name';
+      if (s.icon) { const ic = document.createElement('img'); ic.src = s.icon; nm.appendChild(ic); }
+      const sp = document.createElement('span'); sp.textContent = s.name; nm.appendChild(sp); b.appendChild(nm);
+      b.onclick = () => { sel = s.id; go.disabled = false; render(); };
+      b.ondblclick = () => { sel = s.id; finish(); };
+      grid.appendChild(b);
+    }
+  }
+  function setTab(t) {
+    tab = t; sel = null; go.disabled = true;
+    document.getElementById('t-screen').className = t === 'screen' ? 'on' : '';
+    document.getElementById('t-window').className = t === 'window' ? 'on' : '';
+    render();
+  }
+  function finish() { if (sel) pickerAPI.choose(sel, document.getElementById('audio').checked); }
+  document.getElementById('t-screen').onclick = () => setTab('screen');
+  document.getElementById('t-window').onclick = () => setTab('window');
+  document.getElementById('cancel').onclick = () => pickerAPI.cancel();
+  go.onclick = finish;
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') pickerAPI.cancel(); });
+  if (pickerAPI.platform !== 'win32') { document.getElementById('audioWrap').classList.add('off'); document.getElementById('audio').disabled = true; document.getElementById('audioWrap').title = 'System audio sharing is only available on Windows'; }
+  pickerAPI.onSources((s) => { all = s; if (!all.some((x) => x.isScreen)) tab = 'window'; setTab(tab); if (tab==='screen' && all.filter(x=>x.isScreen).length === 1) { sel = all.find(x=>x.isScreen).id; go.disabled = false; render(); } });
+</script>
+</body>
+</html>
