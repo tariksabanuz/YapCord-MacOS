@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; img-src 'self' data:">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YapCord Installer</title>
+  <link rel="stylesheet" href="installer.css">
+</head>
+<body>
+  <main>
+    <h1>YapCord Installer</h1>
+    <div class="notice" id="notice" role="note"></div>
+
+    <h2>Choose a Yapper install to patch</h2>
+    <div id="installs" role="radiogroup" aria-label="Yapper installs"></div>
+    <div class="row"><button type="button" class="link" id="choose">Choose another folder...</button></div>
+
+    <div class="buttons">
+      <button type="button" class="btn green" id="install">Install</button>
+      <button type="button" class="btn blue" id="repair">Reinstall / Repair</button>
+      <button type="button" class="btn red" id="uninstall">Uninstall</button>
+      <button type="button" class="btn green" id="launch">Start Yapper</button>
+    </div>
+
+    <div id="result" class="result" role="status" hidden></div>
+    <pre id="log" class="log" aria-label="Progress" hidden></pre>
+    <p class="foot" id="foot"></p>
+  </main>
+  <script src="ui.js"></script>
+</body>
+</html>

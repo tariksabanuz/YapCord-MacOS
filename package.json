@@ -1,0 +1,35 @@
+{
+  "name": "yapcord",
+  "productName": "YapCord",
+  "version": "1.33.4",
+  "description": "Yapper desktop client with a Vencord-style plugin, theme and settings system",
+  "main": "src/main/index.js",
+  "author": "YapCord contributors",
+  "license": "GPL-3.0-or-later",
+  "private": true,
+  "yapcord": {
+    "updateRepo": "tariksabanuz/YapCord-Windows"
+  },
+  "scripts": {
+    "start": "electron .",
+    "dist": "npx --yes electron-builder --win portable",
+    "dist:linux": "npx --yes electron-builder --linux AppImage",
+    "dist:installer": "node tools/build-installer.js",
+    "dist:extension": "node tools/build-extension.js --zip",
+    "dist:bookmarklet": "node tools/build-bookmarklet.js",
+    "test": "node test/run-all.js",
+    "test:unit": "node test/unit.js"
+  },
+  "devDependencies": {
+    "electron": "^38.0.0"
+  },
+  "build": {
+    "appId": "dev.yapcord.app",
+    "productName": "YapCord",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["src/**/*", "themes/**/*", "build/icon.png", "package.json"],
+    "win": { "icon": "build/icon.png", "target": ["portable"] },
+    "portable": { "artifactName": "YapCord-${version}-portable.exe" },
+    "linux": { "icon": "build/icon.png", "target": ["AppImage"], "category": "Network", "artifactName": "YapCord-${version}.AppImage" }
+  }
+}

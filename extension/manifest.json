@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "YapCord",
+  "version": "1.19.1",
+  "minimum_chrome_version": "111",
+  "description": "Vencord-style plugins, themes and Custom CSS for Yapper (yapper.website / yapin.gg), no desktop app needed.",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://yapper.website/*", "https://www.yapper.website/*", "https://yapin.gg/*", "https://www.yapin.gg/*"],
+      "js": ["injected.js"],
+      "run_at": "document_start",
+      "all_frames": false,
+      "world": "MAIN"
+    }
+  ]
+}
